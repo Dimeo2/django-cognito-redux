@@ -128,9 +128,8 @@ def process_request(request):
                 user_attributes = {k: v for dict in [{d['Name']: d['Value']} for d in aws_user['UserAttributes']]
                                    for k, v in dict.items()}
 
-                user = get_user_model().objects.create(username=payload['username'], email=user_attributes['email'],
-                                                       first_name=user_attributes['given_name'],
-                                                       last_name=user_attributes['family_name'])
+                # TODO: do custom attribute matching
+                user = get_user_model().objects.create(username=payload['username'], email=user_attributes['email'])
 
                 user.save()
             else:
