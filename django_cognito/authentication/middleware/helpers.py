@@ -10,7 +10,7 @@ import json
 import jwt
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
-from django_cognito import settings
+from django.conf import settings
 from django_cognito.authentication import utils
 from django_cognito.authentication.cognito import constants, actions
 from django_cognito.authentication.utils import PublicKey
@@ -33,7 +33,6 @@ def validate_token(access_token, refresh_token=None):
         # Verify signature using the public key for this pool, as defined the the AWS documentation
         decode = jwt.decode(access_token, PublicKey(matching_key).pem, algorithms=[header['alg']],
                             options={'verify_exp': False})
-        pass
 
     # TODO: Documentation says aud should be the key, but this doesn't exist and client_id has the data aud
     # should have
@@ -43,8 +42,8 @@ def validate_token(access_token, refresh_token=None):
         raise Exception("Invalid token audience")
 
     # Verify that the issuer matches the URL for the Cognito user pool, as defined by the AWS documentation
-    if payload['iss'] != "https://cognito-idp." + constants.POOL_ID.split("_", 1)[0] + ".amazonaws.com/" \
-            + constants.POOL_ID:
+    iss_url = f"https://cognito-idp.{settings.COGNITO_POOL_ID.split('_', 1)[0]}.amazonaws.com/{settings.COGNITO_POOL_ID}"
+    if payload['iss'] != iss_url:
         raise Exception("Invalid token issuer")
 
     # Verify that the token is either not expired, or if expired, that we have a refresh token to refresh it
