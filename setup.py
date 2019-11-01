@@ -28,7 +28,7 @@ if __name__ == "__main__":
         long_description_content_type="text/markdown",
         python_requires=">=3.7",
         classifiers=[
-            'Development Status :: 4 - Beta'
+            'Development Status :: 4 - Beta',
             'Intended Audience :: Developers',
             'Natural Language :: English',
             'License :: OSI Approved :: MIT License',
