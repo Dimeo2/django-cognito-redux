@@ -3,6 +3,12 @@ The intent of this library is to provide a package that supports Django and allo
 
 This is a fork of [Alex Plants](https://github.com/Olorin92) great work with the original [django-cognito](https://github.com/Olorin92/django_cognito).
 
+## Install
+
+```
+pip install django-cognito-redux
+```
+
 ## AWS Credentials
 
 This library uses boto3 which follows a specific path for determining what credentials to use. Definitely recommend reading their [Configuring Credentials](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html) section.
