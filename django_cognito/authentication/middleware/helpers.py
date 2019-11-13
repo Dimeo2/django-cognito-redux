@@ -30,15 +30,22 @@ def validate_token(access_token, refresh_token=None):
     if matching_key is None:
         raise Exception("Invalid token public key")
     else:
-        # Verify signature using the public key for this pool, as defined the the AWS documentation
-        decode = jwt.decode(access_token, PublicKey(matching_key).pem, algorithms=[header['alg']],
-                            options={'verify_exp': False})
+        decode_params = {
+            "algorithms": [header['alg']],
+            "options": {'verify_exp': False}
+        }
+        if 'aud' in payload:
+            decode_params['audience'] = constants.CLIENT_ID
 
-    # TODO: Documentation says aud should be the key, but this doesn't exist and client_id has the data aud
-    # should have
-    #
+        # Verify signature using the public key for this pool, as defined the the AWS documentation
+        decode = jwt.decode(access_token, PublicKey(matching_key).pem, **decode_params)
+
     # Verify that the audience matches the Cognito app ID, as defined by the AWS documentation
-    if payload['client_id'] != constants.CLIENT_ID:
+    audience = payload.get('aud', None)
+    if not audience:
+        audience = payload.get('client_id')
+
+    if audience != constants.CLIENT_ID:
         raise Exception("Invalid token audience")
 
     # Verify that the issuer matches the URL for the Cognito user pool, as defined by the AWS documentation
