@@ -118,27 +118,42 @@ def process_request(request):
     except Exception as ex:
         return AnonymousUser(), None, None
 
-    if not access_token or not refresh_token:
+    try:
+        id_token = request.META['HTTP_IDTOKEN']
+    except Exception as ex:
+        return AnonymousUser(), None, None
+
+    if not all([access_token, id_token]) or not refresh_token:
         # Need to have this to authenticate, error out
         raise Exception("No valid tokens were found in the request")
     else:
-        new_access_token, new_refresh_token = validate_token(access_token, refresh_token)
+        new_access_token, new_refresh_token = validate_token(id_token, refresh_token)
 
-        header, payload = decode_token(access_token)
+        header, payload = decode_token(id_token)
 
         try:
-            user = get_user_model().objects.get(username=payload['username'])
+            params = {
+                settings.COGNITO_USER_MODEL_FIELD_REF_FIELD: payload[settings.COGNITO_TOKEN_REF_FIELD]
+            }
+
+            user = get_user_model().objects.get(**params)
         except Exception as ex:
             if settings.AUTO_CREATE_USER:
-                aws_user = actions.admin_get_user(payload['username'])
+                username = payload.get('username', None)
+                if not username:
+                    username = payload.get('cognito:username')
+
+                aws_user = actions.admin_get_user(username)
 
                 user_attributes = {k: v for dict in [{d['Name']: d['Value']} for d in aws_user['UserAttributes']]
                                    for k, v in dict.items()}
 
-                # TODO: do custom attribute matching
-                user = get_user_model().objects.create(username=payload['username'], email=user_attributes['email'])
+                data = settings.COGNITO_USER_FIELD_MAPPING.copy()
 
-                user.save()
+                for k, v in data.items():
+                    data[k] = user_attributes[v]
+
+                user, _ = get_user_model().objects.get_or_create(**data)
             else:
                 return AnonymousUser, None, None
 
