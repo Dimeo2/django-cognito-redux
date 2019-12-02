@@ -37,9 +37,6 @@ if __name__ == "__main__":
             'Programming Language :: Python :: 3.7',
             'Programming Language :: Python :: 3.8',
             'Framework :: Django',
-            'Framework :: Django :: 2.0',
-            'Framework :: Django :: 2.1',
-            'Framework :: Django :: 2.2',
             'Framework :: Django :: 3.0',
         ],
         project_urls={

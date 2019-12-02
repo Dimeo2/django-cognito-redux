@@ -1,9 +1,11 @@
 # Django Cognito Authentication
 The intent of this library is to provide a package that supports Django and allows an easy implementation for replacing the default Django authentication with an AWS Cognito based authentication.
 
-This is a fork of [Alex Plants](https://github.com/Olorin92) great work with the original [django-cognito](https://github.com/Olorin92/django_cognito).
+This is a fork of [Alex Plant](https://github.com/Olorin92)'s great work with the original [django-cognito](https://github.com/Olorin92/django_cognito).
 
 ## Install
+
+While this may still work on Django 2.x the focus is going to have it be working on Django 3.x. PRs are welcome as needed for keeping 2.x working.
 
 ```
 pip install django-cognito-redux
@@ -138,6 +140,10 @@ AUTO_CREATE_USER = True
 ```
 
 ## Changelog
+
+### 1.4.1
+
+* Upgrade depdencies to be in sync for Django 3.0
 
 ### 1.4.0
 
